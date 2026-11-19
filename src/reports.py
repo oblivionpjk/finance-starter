@@ -19,16 +19,19 @@ def _fmt_sheet(writer, df: pd.DataFrame, sheet: str, is_pct: bool = False):
                     cell.number_format = "0.0%"
 
 
-def build_report(inc, bs, cf, ratio_summary, out_path=None) -> str:
-    """汇总三大报表 + 比率 + 勾稽校验，写入一个 Excel 文件。"""
+def build_report(inc, bs, cf, ratio_summary, out_path=None, amount_unit="万元") -> str:
+    """汇总三大报表 + 比率 + 勾稽校验，写入一个 Excel 文件。
+
+    amount_unit 只影响概览页的列名，调用方需先把金额数据换算到该单位。
+    """
     out_path = out_path or config.REPORT_XLSX
 
-    # 概览：核心指标三年一览
+    # 概览：核心指标一览
     prof = ratio_summary["盈利能力"]
     overview = pd.DataFrame({
-        "营业收入(万元)": item(inc, "营业收入"),
-        "净利润(万元)": item(inc, "净利润"),
-        "经营现金流(万元)": item(cf, "经营活动产生的现金流量净额"),
+        f"营业收入({amount_unit})": item(inc, "营业收入"),
+        f"净利润({amount_unit})": item(inc, "净利润"),
+        f"经营现金流({amount_unit})": item(cf, "经营活动产生的现金流量净额"),
         "毛利率": prof["毛利率"],
         "净利率": prof["净利率"],
         "ROE": prof["ROE(净资产收益率)"],

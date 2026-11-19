@@ -20,7 +20,7 @@ def solvency(bs: pd.DataFrame, cf: pd.DataFrame) -> pd.DataFrame:
     inv = item(bs, "存货")
     cash = item(bs, "货币资金")
     liab = item(bs, "负债合计")
-    equity = item(bs, "所有者权益合计")
+    equity = item(bs, "所有者权益(或股东权益)合计")
     cfo = item(cf, "经营活动产生的现金流量净额")
     out = pd.DataFrame({
         "流动比率": _div(ca, cl),
@@ -42,7 +42,7 @@ def profitability(inc: pd.DataFrame, bs: pd.DataFrame) -> pd.DataFrame:
         "毛利率": _div(revenue - item(inc, "营业成本"), revenue),
         "营业利润率": _div(item(inc, "营业利润"), revenue),
         "净利率": _div(net, revenue),
-        "ROE(净资产收益率)": _div(net, item(bs, "所有者权益合计")),
+        "ROE(净资产收益率)": _div(net, item(bs, "所有者权益(或股东权益)合计")),
         "ROA(总资产收益率)": _div(net, item(bs, "资产总计")),
     })
     return out
@@ -74,7 +74,7 @@ def growth(inc: pd.DataFrame, bs: pd.DataFrame) -> pd.DataFrame:
         "营业收入增速": yoy(item(inc, "营业收入")),
         "净利润增速": yoy(item(inc, "净利润")),
         "总资产增速": yoy(item(bs, "资产总计")),
-        "净资产增速": yoy(item(bs, "所有者权益合计")),
+        "净资产增速": yoy(item(bs, "所有者权益(或股东权益)合计")),
     })
     out.iloc[0] = float("nan")  # 首年无同比基数
     return out
@@ -96,7 +96,7 @@ def dupont(inc: pd.DataFrame, bs: pd.DataFrame) -> pd.DataFrame:
     net = item(inc, "净利润")
     revenue = item(inc, "营业收入")
     assets = item(bs, "资产总计")
-    equity = item(bs, "所有者权益合计")
+    equity = item(bs, "所有者权益(或股东权益)合计")
     out = pd.DataFrame({
         "净利率": _div(net, revenue),
         "总资产周转率": _div(revenue, assets),

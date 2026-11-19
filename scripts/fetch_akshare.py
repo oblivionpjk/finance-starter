@@ -21,37 +21,26 @@ def fetch(code: str) -> int:
     try:
         import akshare as ak
     except ImportError:
-        print("未安装 akshare，请运行：.venv/bin/pip install akshare")
+        print("未安装 akshare，请运行：.venv/bin/python -m pip install akshare")
         return 2
 
+    # 新浪接口用带市场前缀的代码：6 开头为沪市 sh，其余为深市 sz
+    symbol = f"sh{code}" if code.startswith("6") else f"sz{code}"
     print(f"正在拉取 {code} 的财务数据（数据源可能变动，失败请稍后重试）...")
     pulled = 0
-    # 利润表
-    try:
-        income = ak.stock_financial_report_sina(stock=f"sh{code}" if code.startswith("6") else f"sz{code}", symbol="利润表")
-        income.to_csv(config.RAW_DIR / f"{code}_income.csv", index=False, encoding="utf-8-sig")
-        print(f"  ✓ 利润表 {income.shape} → data/raw/{code}_income.csv")
-        pulled += 1
-    except Exception as e:
-        print(f"  ✗ 利润表拉取失败：{e}")
-
-    # 资产负债表
-    try:
-        bs = ak.stock_financial_report_sina(stock=f"sh{code}" if code.startswith("6") else f"sz{code}", symbol="资产负债表")
-        bs.to_csv(config.RAW_DIR / f"{code}_balance.csv", index=False, encoding="utf-8-sig")
-        print(f"  ✓ 资产负债表 {bs.shape} → data/raw/{code}_balance.csv")
-        pulled += 1
-    except Exception as e:
-        print(f"  ✗ 资产负债表拉取失败：{e}")
-
-    # 现金流量表
-    try:
-        cf = ak.stock_financial_report_sina(stock=f"sh{code}" if code.startswith("6") else f"sz{code}", symbol="现金流量表")
-        cf.to_csv(config.RAW_DIR / f"{code}_cashflow.csv", index=False, encoding="utf-8-sig")
-        print(f"  ✓ 现金流量表 {cf.shape} → data/raw/{code}_cashflow.csv")
-        pulled += 1
-    except Exception as e:
-        print(f"  ✗ 现金流量表拉取失败：{e}")
+    # 新版 akshare 签名：stock_financial_report_sina(symbol=代码, indicator=报表名)
+    for indicator, filename, label in (
+        ("利润表", "income", "利润表"),
+        ("资产负债表", "balance", "资产负债表"),
+        ("现金流量表", "cashflow", "现金流量表"),
+    ):
+        try:
+            df = ak.stock_financial_report_sina(symbol=symbol, indicator=indicator)
+            df.to_csv(config.RAW_DIR / f"{code}_{filename}.csv", index=False, encoding="utf-8-sig")
+            print(f"  ✓ {label} {df.shape} → data/raw/{code}_{filename}.csv")
+            pulled += 1
+        except Exception as e:
+            print(f"  ✗ {label}拉取失败：{e}")
 
     print(f"\n共拉取 {pulled}/3 张表，文件在 {config.RAW_DIR}")
     print("提示：真实报表字段与演示数据不同，套用比率模块前需先做字段映射。")

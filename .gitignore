@@ -7,6 +7,8 @@ __pycache__/
 
 # 虚拟环境
 .venv/
+.venv-old/
+.venv-rebuild-backup/
 venv/
 env/
 
@@ -23,6 +25,9 @@ output/
 
 # akshare 拉取的真实数据（体积大，默认不入库）
 data/raw/
+
+# 演示数据改造前的备份（回退用，不入库）
+data/demo-backup/
 
 # 系统文件
 .DS_Store

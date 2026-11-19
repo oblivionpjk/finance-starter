@@ -22,24 +22,37 @@ def setup_chinese_font() -> str:
     return "default"
 
 
-def plot_trend(inc, bs, cf, out_path=None) -> str:
-    """收入 / 净利润 / 经营现金流 三年趋势 + 毛利率。"""
+def plot_trend(inc, bs, cf, out_path=None, years=None, title=None, amount_unit="万元") -> str:
+    """收入 / 净利润 / 经营现金流趋势 + 毛利率。
+
+    years 为空时取三张报表的年份交集，保证每条序列等长（真实财报各表期数可能不同）。
+    amount_unit 仅用于坐标轴标签，不换算数值；调用方若要改单位请先自行换算数据。
+    """
     setup_chinese_font()
-    years = list(inc.columns)
-    revenue = item(inc, "营业收入")
-    net = item(inc, "净利润")
-    cfo = item(cf, "经营活动产生的现金流量净额")
-    margin = (revenue - item(inc, "营业成本")) / revenue
+    if years is None:
+        common = set(inc.columns) & set(bs.columns) & set(cf.columns)
+        years = sorted(common)
+    years = list(years)
+    revenue = item(inc, "营业收入").reindex(years)
+    net = item(inc, "净利润").reindex(years)
+    cfo = item(cf, "经营活动产生的现金流量净额").reindex(years)
+    margin = (revenue - item(inc, "营业成本").reindex(years)) / revenue
 
     fig, ax1 = plt.subplots(figsize=(9, 5))
     ax1.plot(years, revenue, "o-", label="营业收入", linewidth=2)
     ax1.plot(years, net, "s-", label="净利润", linewidth=2)
     ax1.plot(years, cfo, "^-", label="经营现金流净额", linewidth=2)
-    ax1.set_ylabel("金额（万元）")
+    ax1.set_ylabel(f"金额（{amount_unit}）")
     ax1.set_xlabel("年度")
-    ax1.set_title("经营趋势（演示数据 · 虚构公司）")
+    ax1.set_title(title or "经营趋势（演示数据 · 虚构公司）")
     ax1.set_xticks(years)
-    ax1.set_xticklabels([str(y) for y in years])
+    # 年份多时每隔几个显示一个标签，避免重叠；始终保证首尾年份可见
+    step = max(1, (len(years) + 9) // 10)
+    show = [i for i in range(len(years)) if i % step == 0]
+    if show and show[-1] != len(years) - 1:
+        show.append(len(years) - 1)
+    ax1.set_xticks([years[i] for i in show])
+    ax1.set_xticklabels([str(years[i]) for i in show], rotation=45, ha="right")
     ax1.grid(alpha=0.3)
 
     ax2 = ax1.twinx()
@@ -58,7 +71,7 @@ def plot_trend(inc, bs, cf, out_path=None) -> str:
     return str(out_path)
 
 
-def plot_radar(ratio_summary: dict, year: int, out_path=None) -> str:
+def plot_radar(ratio_summary: dict, year: int, out_path=None, title=None) -> str:
     """单年度五维能力雷达图（比率越大越好，已做正向化）。"""
     setup_chinese_font()
     prof = ratio_summary["盈利能力"]
@@ -93,7 +106,7 @@ def plot_radar(ratio_summary: dict, year: int, out_path=None) -> str:
     ax.set_xticks(angles)
     ax.set_xticklabels(labels)
     ax.set_ylim(0, 1)
-    ax.set_title(f"{year} 年财务能力雷达（演示数据）")
+    ax.set_title(title or f"{year} 年财务能力雷达（演示数据）")
     fig.tight_layout()
 
     out_path = out_path or config.RADAR_PNG

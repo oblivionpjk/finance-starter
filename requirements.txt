@@ -1,0 +1,11 @@
+# 财会数据分析 · 核心依赖
+pandas>=2.0
+numpy>=1.24
+matplotlib>=3.7
+openpyxl>=3.1          # 读写 Excel
+
+# 可选：Jupyter 探索环境（按需取消注释）
+jupyter>=1.0
+
+# 可选：拉 A 股真实财务数据（接口可能变动，入门分析不需要）
+# akshare>=1.12

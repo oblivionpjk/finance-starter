@@ -80,41 +80,6 @@ cd finance-starter
 
 真实财报接入交互分析的完整流程见 `notebooks/01_getting_started.ipynb` 第 4 节：拉取 → 用统一 `load_all(source='real', code=...)` 加载 → 复用比率模块。
 
-## 版本管理（Git / GitHub）
-
-项目已用 Git 做版本管理。`.gitignore` 已排除虚拟环境、`data/raw/`（真实财报）、`output/`（可重生成产物）与重建备份，这些不会进版本库。
-
-首次提交前需配置提交身份（姓名与邮箱），然后提交：
-
-```bash
-git config user.name  "你的名字"      # 去掉 --global 只对本项目生效
-git config user.email "你的邮箱"
-git add .
-git commit -m "初始化财会数据分析项目"
-```
-
-查看配置及其来源：`git config --list --show-origin`（可加 `--global` / `--local` 只看某级）。日常用 `git status` 看状态、`git log` 看历史。
-
-连接 GitHub 远程仓库（SSH 方式免密推送）：
-
-```bash
-# 1. 生成密钥（若已有 ~/.ssh/id_ed25519 可跳过）
-ssh-keygen -t ed25519 -C "your-email@example.com" -f ~/.ssh/id_ed25519 -N ""
-
-# 2. 复制公钥内容，粘贴到 GitHub → Settings → SSH and GPG keys → New SSH key
-cat ~/.ssh/id_ed25519.pub
-
-# 3. 测试连通（看到 Hi <用户名>! 即成功，首次问 yes/no 输入 yes）
-ssh -T git@github.com
-
-# 4. 在 GitHub 建一个空仓库（不要勾选 README/.gitignore/license），关联并首次推送
-git remote add origin git@github.com:<用户名>/<仓库名>.git
-git branch -M main
-git push -u origin main
-```
-
-私钥 `id_ed25519` 绝不外传、不提交；`-u` 绑定后日常只需 `git push`。
-
 ## 指标口径
 
 共六大类、26 项指标（含杜邦分解）：偿债 6、盈利 5、营运 3、成长 4、现金流 3、杜邦 5。比率均为无量纲比值，与金额单位（元 / 万元 / 亿元）无关。

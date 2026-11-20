@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>REITs 行情分析与横向对标</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <link rel="stylesheet" href="/static/reits.css">
+</head>
+<body>
+<div class="wrap">
+  <header class="hdr">
+    <div>
+      <h1>REITs 行情分析与横向对标</h1>
+      <p class="sub">上传 WIND 导出的行情 Excel，自动重算指标，生成 PDF 报告与可下载 PNG 图表</p>
+    </div>
+    <div class="hdr-actions">
+      <a class="ghost-link" href="/">← 返回 A 股财务分析</a>
+      <span class="badge">数据仅当前页面留存</span>
+    </div>
+  </header>
+
+  <section class="card">
+    <h2>1. 上传 WIND Excel</h2>
+    <div class="field">
+      <label for="reit-files">选择文件（xls / xlsx，可多选）</label>
+      <input id="reit-files" type="file" multiple accept=".xls,.xlsx">
+    </div>
+    <button id="reit-upload" class="primary">上传并解析</button>
+    <p class="hint">同一份工作簿可一表一标的；后续上传其他维度的 Excel 会累积进本次分析，已实现解析器即可自动产出新章节。原始文件只保存在当前会话临时目录。</p>
+  </section>
+
+  <section id="reit-quality" class="card hidden">
+    <h2>2. 数据质量与缺口</h2>
+    <div id="reit-quality-body"></div>
+  </section>
+
+  <section id="reit-options" class="card hidden">
+    <h2>3. 对标参数</h2>
+    <div class="row">
+      <div class="field">
+        <label for="reit-benchmark">基准标的</label>
+        <select id="reit-benchmark"></select>
+      </div>
+      <div class="field option-check">
+        <label><input id="reit-exclude" type="checkbox"> 流动性均值剔除上市首日</label>
+      </div>
+    </div>
+    <button id="reit-generate" class="primary">生成 PDF 报告与 PNG 图表</button>
+    <p class="hint">基准标的决定第 3、4 章与全部图表的对标口径；切换后下方报告与图表会自动按新基准重新生成。横向排名统一使用所有标的齐全的公共窗口；年初至今基准为上年最后一个交易日。</p>
+  </section>
+
+  <section id="reit-result" class="hidden"></section>
+  <div id="reit-status" class="status"></div>
+
+  <footer class="ftr">
+    内部自用 · 确定性模板报告 · 数据一律从 WIND 原始行情重算 · 不构成投资建议
+  </footer>
+</div>
+<script src="/static/reits.js"></script>
+</body>
+</html>

@@ -3,9 +3,18 @@ pandas>=2.0
 numpy>=1.24
 matplotlib>=3.7
 openpyxl>=3.1          # 读写 Excel
+xlrd>=2.0.1            # 读取 WIND 导出的老式 .xls 工作簿（REITs 行情分析）
 
-# 可选：Jupyter 探索环境（按需取消注释）
-jupyter>=1.0
+# 系统服务层（FastAPI 接口 + 静态页 + 文件上传）
+fastapi>=0.110
+uvicorn>=0.27
+python-multipart>=0.0.9
+requests>=2.31           # 在线数据源 HTTP 请求（简称表刷新等）
 
-# 可选：拉 A 股真实财务数据（接口可能变动，入门分析不需要）
-# akshare>=1.12
+# 报告输出（PDF 主格式，纯 Python 实现，无需系统图形库）
+reportlab>=4.0
+
+# 可选依赖（按需取消注释，容器镜像默认不安装以减小体积）：
+# jupyter>=1.0        # Jupyter 探索环境
+# akshare>=1.12       # A 股在线财务数据源；本机默认走离线 mock 快照，无需联网。
+#                      设置 FINANCE_SOURCE=akshare 时才需要安装。
